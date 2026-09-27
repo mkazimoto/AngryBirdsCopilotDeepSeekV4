@@ -1,0 +1,24 @@
+# Sistema
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Editores / IDE
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+*.swp
+
+# Temporários de teste e capturas de tela
+*.tmp
+.tmp-*
+*-check.png
+level*.png
+*.log
+
+# Node
+node_modules/
+npm-debug.log*
+.env
+.env.*

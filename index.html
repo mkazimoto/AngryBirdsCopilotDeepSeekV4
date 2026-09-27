@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="description" content="Angry Birds com física real (Matter.js) e som sintetizado (Web Audio API).">
+  <title>Angry Birds — Física &amp; Som</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <div id="app">
+    <canvas id="game" width="1280" height="720"></canvas>
+
+    <!-- HUD -->
+    <div class="hud">
+      <div class="hud-left">
+        <div class="panel">
+          <span class="label">PONTOS</span>
+          <span class="value" id="score">0</span>
+        </div>
+        <div class="panel">
+          <span class="label">FASE</span>
+          <span class="value" id="levelNum">1</span>
+        </div>
+      </div>
+
+      <div class="hud-right">
+        <div class="panel birds" id="birdQueue"></div>
+        <button id="btnAbility" class="icon-btn" title="Habilidade do pássaro (Espaço)">⚡</button>
+        <button id="btnRestart" class="icon-btn" title="Reiniciar fase (R)">↻</button>
+        <button id="btnSound" class="icon-btn" title="Ligar/desligar som (M)">🔊</button>
+      </div>
+    </div>
+
+    <div class="hint" id="hint"></div>
+
+    <!-- Overlay de início / fim de fase -->
+    <div class="overlay" id="overlay">
+      <div class="card">
+        <h1 id="ovTitle">Angry Birds</h1>
+        <p id="ovText">
+          Arraste o pássaro para trás e solte para lançar. Derrube os porcos usando a física a seu
+          favor — madeira quebra fácil, pedra resiste, gelo estilhaça.
+        </p>
+        <div class="stars" id="ovStars"></div>
+        <div class="actions">
+          <button class="btn primary" id="ovPrimary">Jogar</button>
+          <button class="btn" id="ovSecondary" hidden>Reiniciar fase</button>
+        </div>
+        <div class="credits">
+          <kbd>Arraste</kbd> mirar &nbsp;•&nbsp; <kbd>Clique</kbd>/<kbd>Espaço</kbd> habilidade
+          &nbsp;•&nbsp; <kbd>R</kbd> reiniciar &nbsp;•&nbsp; <kbd>M</kbd> som
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Física: Matter.js (vendorizado, funciona offline) -->
+  <script src="vendor/matter.min.js"></script>
+
+  <!-- Jogo -->
+  <script src="js/audio.js"></script>
+  <script src="js/entities.js"></script>
+  <script src="js/levels.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/main.js"></script>
+</body>
+
+</html>
