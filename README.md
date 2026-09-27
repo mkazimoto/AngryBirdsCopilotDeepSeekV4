@@ -3,6 +3,8 @@
 Clone do Angry Birds feito com **HTML5 Canvas**, **física real** ([Matter.js](https://brm.io/matter-js/))
 e **som 100% sintetizado** pela Web Audio API — sem nenhum arquivo de áudio externo.
 
+### ▶️ [Jogar agora](https://mkazimoto.github.io/AngryBirdsCopilotDeepSeekV4/)
+
 ```
 index.html          página do jogo (abre direto no navegador)
 vendor/matter.min.js motor de física (vendorizado — funciona offline)
