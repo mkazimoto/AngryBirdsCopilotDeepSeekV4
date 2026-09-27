@@ -5,6 +5,14 @@ e **som 100% sintetizado** pela Web Audio API — sem nenhum arquivo de áudio e
 
 ### ▶️ [Jogar agora](https://mkazimoto.github.io/AngryBirdsCopilotDeepSeekV4/)
 
+## 📸 Capturas de tela
+
+| Mira com prévia da trajetória | Física em ação |
+| :---: | :---: |
+| ![Estilingue esticado com o pássaro, arco de força e pontilhado da trajetória prevista](docs/01-mira.png) | ![Torre de madeira desabando com detritos e pontuação flutuante](docs/02-fisica.png) |
+| **Castelo do Rei Porco** — fase 5 | **Vitória com 3 estrelas** |
+| ![Castelo de pedra, gelo e madeira com cinco porcos, fase final](docs/03-castelo.png) | ![Tela de fase concluída com três estrelas e 31.000 pontos](docs/04-vitoria.png) |
+
 ```
 index.html          página do jogo (abre direto no navegador)
 vendor/matter.min.js motor de física (vendorizado — funciona offline)
@@ -145,19 +153,21 @@ Não existe um único `.mp3`. Tudo é gerado em tempo real em `js/audio.js`:
 | Bloco destruído | 500 |
 | Pássaro não utilizado (bônus de vitória) | 10 000 |
 
-O total define de **1 a 3 estrelas**, conforme os limites de cada fase.
+O total define de **1 a 3 estrelas**, conforme os limites de cada fase. As metas são
+dimensionadas sobre o máximo possível de cada fase (porcos + blocos + bônus de aves
+não usadas), de modo que **as 3 estrelas são sempre alcançáveis**, mas exigem poupar aves.
 
 ---
 
 ## 🗺️ Fases
 
-| # | Nome | Porcos | Ideia |
-| --- | --- | --- | --- |
-| 1 | Primeiros Passos | 2 | Estrutura em trave de gol; ensina a mecânica. |
-| 2 | Cabana de Madeira | 4 | Torre de dois andares + abrigo lateral. |
-| 3 | Torre de Gelo | 3 | Gelo estilhaça fácil; o pássaro azul se divide. |
-| 4 | Muralha de Pedra | 4 | Muralha resistente — use as explosões. |
-| 5 | Castelo do Rei Porco | 5 | Fortaleza final: duas alas, torre central e anteparo de gelo. |
+| # | Nome | Porcos | Meta de ⭐⭐⭐ | Ideia |
+| --- | --- | :---: | ---: | --- |
+| 1 | Primeiros Passos | 2 | 30 000 | Estrutura em trave de gol; ensina a mecânica. |
+| 2 | Cabana de Madeira | 4 | 44 000 | Torre de dois andares + abrigo lateral. |
+| 3 | Torre de Gelo | 3 | 41 000 | Gelo estilhaça fácil; o pássaro azul se divide. |
+| 4 | Muralha de Pedra | 4 | 48 000 | Muralha resistente — use as explosões. |
+| 5 | Castelo do Rei Porco | 5 | 68 000 | Fortaleza final: duas alas, torre central e anteparo de gelo. |
 
 ---
 

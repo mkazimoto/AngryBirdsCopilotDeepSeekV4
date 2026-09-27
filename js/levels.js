@@ -31,7 +31,7 @@
       subtitle: 'Mire, estique a borracha e solte!',
       sky: ['#7dc4f5', '#c9e9ff', '#eaf7ff'],
       birds: ['red', 'red', 'yellow'],
-      stars: [16000, 26000, 34000],
+      stars: [16000, 23000, 30000],
       blocks: [
         blk(980, 640, 26, 150, 'wood'),
         blk(1170, 640, 26, 150, 'wood'),
@@ -49,7 +49,7 @@
       subtitle: 'Derube a torre e esmague os porcos.',
       sky: ['#78bdf0', '#c4e6ff', '#eef8ff'],
       birds: ['red', 'yellow', 'red', 'black'],
-      stars: [24000, 36000, 46000],
+      stars: [24000, 35000, 44000],
       blocks: [
         /* torre principal */
         blk(880, 640, 26, 150, 'wood'),
@@ -79,7 +79,7 @@
       subtitle: 'O gelo quebra fácil — o azul se divide em três.',
       sky: ['#6fb6e8', '#bfe4ff', '#f0fbff'],
       birds: ['blue', 'red', 'yellow', 'blue'],
-      stars: [22000, 34000, 44000],
+      stars: [22000, 32000, 41000],
       blocks: [
         blk(700, 640, 26, 120, 'ice'),
         blk(820, 640, 26, 120, 'ice'),
@@ -106,7 +106,7 @@
       subtitle: 'Pedra resiste muito. Use o pássaro preto a seu favor.',
       sky: ['#5f9fd0', '#a9d3f2', '#e8f5ff'],
       birds: ['red', 'black', 'yellow', 'black', 'red'],
-      stars: [28000, 40000, 52000],
+      stars: [26000, 38000, 48000],
       blocks: [
         /* muralha de pedra — dois porcos abrigados dentro */
         blk(880, 640, 30, 150, 'stone'),
@@ -137,7 +137,7 @@
       subtitle: 'A fortaleza final. Todas as aves entram em campo.',
       sky: ['#4d84b8', '#9dc6e8', '#e2f1ff'],
       birds: ['red', 'yellow', 'blue', 'black', 'yellow', 'black'],
-      stars: [42000, 58000, 72000],
+      stars: [40000, 55000, 68000],
       blocks: [
         /* parede de gelo na frente */
         blk(590, 640, 26, 120, 'ice'),
