@@ -3,8 +3,14 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="description" content="Angry Birds com física real (Matter.js) e som sintetizado (Web Audio API).">
+  <meta name="theme-color" content="#0b1220">
+  <meta name="color-scheme" content="dark">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Angry Birds">
   <title>Angry Birds — Física &amp; Som</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -31,6 +37,7 @@
         <button id="btnAbility" class="icon-btn" title="Habilidade do pássaro (Espaço)">⚡</button>
         <button id="btnRestart" class="icon-btn" title="Reiniciar fase (R)">↻</button>
         <button id="btnSound" class="icon-btn" title="Ligar/desligar som (M)">🔊</button>
+        <button id="btnFull" class="icon-btn touch-only" title="Tela cheia" aria-label="Tela cheia">⛶</button>
       </div>
     </div>
 
@@ -49,11 +56,24 @@
           <button class="btn primary" id="ovPrimary">Jogar</button>
           <button class="btn" id="ovSecondary" hidden>Reiniciar fase</button>
         </div>
-        <div class="credits">
+        <div class="credits desktop-only">
           <kbd>Arraste</kbd> mirar &nbsp;•&nbsp; <kbd>Clique</kbd>/<kbd>Espaço</kbd> habilidade
           &nbsp;•&nbsp; <kbd>R</kbd> reiniciar &nbsp;•&nbsp; <kbd>M</kbd> som
         </div>
+        <div class="credits touch-only">
+          <strong>Arraste</strong> o pássaro para mirar e solte para lançar
+          &nbsp;•&nbsp; <strong>toque</strong> na tela durante o voo para usar a habilidade
+        </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Aviso de orientação: só aparece em celulares na vertical (ver js/main.js) -->
+  <div class="rotate" id="rotate" role="alert">
+    <div class="rotate-inner">
+      <div class="rotate-icon" aria-hidden="true">📱</div>
+      <h2>Gire o celular</h2>
+      <p>Este jogo foi feito para o <strong>modo paisagem</strong>. Gire o aparelho para continuar.</p>
     </div>
   </div>
 

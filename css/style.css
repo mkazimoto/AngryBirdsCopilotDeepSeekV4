@@ -18,7 +18,16 @@
 
 * { box-sizing: border-box; }
 
-html, body { height: 100%; }
+html {
+  height: 100%;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+html, body {
+  height: 100%;
+  overscroll-behavior: none;
+}
 
 body {
   margin: 0;
@@ -33,6 +42,8 @@ body {
   -webkit-user-select: none;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  touch-action: manipulation;
 }
 
 /* ------------------------------ área do jogo ------------------------------ */
@@ -40,11 +51,18 @@ body {
 #app {
   position: relative;
   width: min(100vw, calc(100vh * 16 / 9));
+  width: min(100dvw, calc(100dvh * 16 / 9));
+  max-height: 100dvh;
   aspect-ratio: 16 / 9;
   border-radius: var(--radius);
   overflow: hidden;
   box-shadow: var(--shadow);
   isolation: isolate;
+}
+
+/* Em telas pequenas o canvas ocupa a tela toda, sem moldura. */
+@media (max-width: 640px), (max-height: 480px) {
+  #app { border-radius: 0; box-shadow: none; }
 }
 
 canvas#game {
@@ -65,7 +83,7 @@ canvas#game {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  padding: 14px 16px;
+  padding: calc(14px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right)) 14px calc(16px + env(safe-area-inset-left));
   pointer-events: none;
   z-index: 3;
 }
@@ -181,18 +199,25 @@ canvas#game {
   z-index: 5;
   display: grid;
   place-items: center;
-  padding: 24px;
+  padding: max(14px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) max(14px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
   background: rgba(4, 8, 16, 0.72);
   backdrop-filter: blur(6px);
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.28s ease, visibility 0.28s ease;
+
+  /* Enquanto some, o overlay deixa de capturar o toque na hora — sem isto o
+     primeiro arraste (principalmente no celular) cairia no vazio. */
+  pointer-events: none;
 }
 
-.overlay.show { opacity: 1; visibility: visible; }
+.overlay.show { opacity: 1; visibility: visible; pointer-events: auto; }
 
 .card {
   width: min(560px, 100%);
+  max-height: calc(100dvh - 20px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: 28px 30px 26px;
   text-align: center;
   border: 1px solid var(--stroke);
@@ -284,4 +309,105 @@ kbd {
   border-bottom-width: 2px;
   border-radius: 6px;
   background: rgba(255, 255, 255, 0.08);
+}
+
+/* ============================================================
+   Celular / toque
+   A classe `touch` é aplicada no <html> por js/main.js quando o
+   dispositivo tem entrada por toque; `portrait-blocked` é ligada
+   enquanto a tela está na vertical (aviso de rotação).
+   ============================================================ */
+
+.touch-only { display: none !important; }
+html.touch .icon-btn.touch-only { display: grid !important; }
+html.touch .credits.touch-only { display: block !important; }
+html.touch .desktop-only { display: none !important; }
+
+/* Alvos de toque confortáveis (mínimo recomendado: 44px) */
+html.touch .icon-btn {
+  width: 46px;
+  height: 46px;
+  font-size: 19px;
+  border-radius: 14px;
+}
+
+html.touch .btn { padding: 13px 26px; font-size: 15px; }
+
+/* Telas baixas (celular na horizontal): compacta o HUD e o overlay */
+@media (max-height: 520px) {
+  .hud { padding: calc(8px + env(safe-area-inset-top)) calc(10px + env(safe-area-inset-right)) 8px calc(10px + env(safe-area-inset-left)); }
+  .hud-left, .hud-right { gap: 7px; }
+
+  .panel { padding: 5px 11px; gap: 6px; }
+  .panel .label { font-size: 9px; }
+  .panel .value { font-size: 15px; }
+
+  .icon-btn { width: 38px; height: 38px; font-size: 15px; }
+  html.touch .icon-btn { width: 44px; height: 44px; font-size: 17px; }
+
+  .birds { padding: 5px 9px; min-height: 32px; gap: 5px; }
+  .bird-chip { width: 18px; height: 18px; }
+
+  .hint { bottom: 8px; padding: 5px 12px; font-size: 11px; }
+
+  .overlay { padding: 10px; }
+  .card { padding: 16px 18px 14px; border-radius: 16px; }
+  .card h1 { font-size: clamp(19px, 4.4vw, 28px); margin-bottom: 2px; }
+  .card p { font-size: 12px; line-height: 1.4; margin-bottom: 8px; }
+  .stars { font-size: 24px; min-height: 28px; margin-bottom: 8px; }
+  .btn { padding: 8px 16px; font-size: 13px; }
+  html.touch .btn { padding: 10px 20px; font-size: 14px; }
+  .credits { margin-top: 8px; font-size: 10px; }
+}
+
+/* Telas estreitas: a dica pode quebrar em duas linhas */
+@media (max-width: 640px) {
+  .hint {
+    max-width: 88vw;
+    white-space: normal;
+    text-align: center;
+    line-height: 1.35;
+  }
+}
+
+/* ------------------------------ aviso de rotação ------------------------------ */
+
+.rotate {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: none;
+  place-items: center;
+  padding: calc(28px + env(safe-area-inset-top)) 28px calc(28px + env(safe-area-inset-bottom));
+  text-align: center;
+  background: radial-gradient(900px 600px at 50% 0%, #1d3a63 0%, #0b1220 60%, #05080f 100%);
+}
+
+html.portrait-blocked .rotate { display: grid; }
+
+.rotate-inner { max-width: 30ch; }
+
+.rotate-icon {
+  font-size: 58px;
+  line-height: 1;
+  animation: rotate-tilt 2.2s ease-in-out infinite;
+}
+
+@keyframes rotate-tilt {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-90deg); }
+}
+
+.rotate-inner h2 {
+  margin: 14px 0 6px;
+  font-size: clamp(20px, 5.4vw, 26px);
+  font-weight: 900;
+  letter-spacing: -0.01em;
+}
+
+.rotate-inner p { margin: 0; font-size: 14px; line-height: 1.5; color: var(--muted); }
+
+@media (prefers-reduced-motion: reduce) {
+  .rotate-icon { animation: none; }
+  .overlay, .card, .hint, .icon-btn, .btn { transition: none; }
 }

@@ -47,16 +47,50 @@ node servidor.js        :: http://localhost:5173
 
 ## 🎮 Controles
 
-| Ação | Teclado / Mouse |
-| --- | --- |
-| Mirar e lançar | **arraste** o pássaro para trás e **solte** |
-| Habilidade da ave | **clique** / toque durante o voo — ou **Espaço** |
-| Reiniciar fase | **R** |
-| Ligar/desligar som | **M** |
-| Confirmar no menu | **Enter** |
+| Ação | Teclado / Mouse | Toque (celular) |
+| --- | --- | --- |
+| Mirar e lançar | **arraste** o pássaro para trás e **solte** | **arraste** o pássaro para trás e **solte** |
+| Habilidade da ave | **clique** durante o voo — ou **Espaço** | **toque** na tela durante o voo — ou o botão ⚡ |
+| Reiniciar fase | **R** | botão ↻ |
+| Ligar/desligar som | **M** | botão 🔊 |
+| Tela cheia | **F** | botão ⛶ |
+| Confirmar no menu | **Enter** | toque em **Jogar** |
 
 Durante a mira aparece a **prévia da trajetória** (simulada com a mesma gravidade do motor
 de física) e um **arco de força** ao redor do pássaro.
+
+---
+
+## 📱 No celular
+
+![Jogo rodando em um celular na horizontal, com o pássaro esticado no estilingue, a prévia pontilhada da trajetória, o arco de força e o HUD compacto com botões grandes](docs/05-celular.png)
+
+O jogo já vem pronto para toque e para telas pequenas:
+
+* **Toque** — arrastar para mirar, soltar para lançar e tocar durante o voo para usar a
+  habilidade. A área de agarrar o pássaro é maior no dedo do que no mouse.
+* **Modo paisagem** — o mundo é 16:9, então na vertical sobraria uma faixa minúscula. Ao
+  abrir na vertical, o jogo **pausa** e mostra o aviso *“Gire o celular”*; ao girar, ele volta
+  sozinho de onde parou.
+* **Tela cheia** — o botão ⛶ no HUD entra em tela cheia e tenta travar em paisagem (Android).
+  No iOS o Safari não permite tela cheia de página, e aí o jogo roda direto no navegador.
+* **Área segura** — o HUD e os overlays respeitam o *notch* e a barra de gestos
+  (`env(safe-area-inset-*)`), e a altura usa `100dvh` para não ficar escondida atrás da
+  barra de endereço.
+* **Sem zoom acidental** — zoom por pinça e duplo toque ficam desativados, e o áudio só é
+  liberado depois do primeiro toque (política de autoplay dos navegadores).
+
+**Como abrir no celular:** rode `node servidor.js` no computador e acesse, no aparelho, um
+endereço da lista que aparece no terminal (celular e PC na **mesma rede Wi-Fi**):
+
+```
+  Neste computador  http://localhost:5173
+  No celular (mesma rede Wi-Fi):
+                    http://192.168.x.x:5173
+```
+
+Como o site também está publicado no GitHub Pages, basta abrir
+[o link do jogo](https://mkazimoto.github.io/AngryBirdsCopilotDeepSeekV4/) no navegador do celular.
 
 ---
 
@@ -181,7 +215,8 @@ não usadas), de modo que **as 3 estrelas são sempre alcançáveis**, mas exige
 * **Partículas e textos flutuantes** para detritos, poeira, fumaça e pontuação.
 * **Câmera** que acompanha o pássaro em voo e volta suavemente ao estilingue.
 * **Responsivo** — o canvas 16:9 se adapta à janela, com `devicePixelRatio` para
-  nitidez em telas de alta densidade.
+  nitidez em telas de alta densidade. Em celulares ele usa `100dvh`, respeita as áreas
+  seguras do aparelho e só roda em modo paisagem (a vertical mostra o aviso de girar).
 * Escala do mundo: 1280×720 de viewport, gravidade efetiva de **0,3194 px/passo²**
   e lançamento máximo de **21 px/passo**.
 

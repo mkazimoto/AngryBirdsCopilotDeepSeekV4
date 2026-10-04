@@ -8,6 +8,13 @@
 
   var AB = window.AB;
 
+  /* Detecta dispositivo de toque: o CSS usa `html.touch` para trocar os
+     textos de ajuda e aumentar os alvos de toque. */
+  var isTouch = !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches) ||
+    ('ontouchstart' in window) ||
+    (navigator.maxTouchPoints || 0) > 0;
+  document.documentElement.classList.toggle('touch', isTouch);
+
   var canvas = document.getElementById('game');
   var app = document.getElementById('app');
 
@@ -24,12 +31,14 @@
     ovSecondary: document.getElementById('ovSecondary'),
     btnRestart: document.getElementById('btnRestart'),
     btnSound: document.getElementById('btnSound'),
-    btnAbility: document.getElementById('btnAbility')
+    btnAbility: document.getElementById('btnAbility'),
+    btnFull: document.getElementById('btnFull')
   };
 
   var game = new AB.Game(canvas);
 
   var paused = true;          /* travado enquanto o overlay está aberto */
+  var blocked = false;        /* travado enquanto o celular está na vertical */
   var overlayMode = 'start';
   var overlayData = null;
   var hintTimer = null;
@@ -77,7 +86,7 @@
 
   var INTRO = 'Arraste o pássaro para trás e solte para lançar. Derrube todos os porcos usando a ' +
     'física a seu favor — <strong>madeira</strong> quebra fácil, <strong>pedra</strong> resiste ' +
-    'e o <strong>gelo</strong> estilhaça. Clique durante o voo para usar a habilidade da ave.';
+    'e o <strong>gelo</strong> estilhaça. Toque (ou clique) durante o voo para usar a habilidade da ave.';
 
   function showOverlay(mode, data) {
     overlayMode = mode;
@@ -146,12 +155,55 @@
     if (on) bootAudio();
   }
 
+  /* ---------------------------------------------------------- tela cheia */
+
+  function fullscreenElement() {
+    return document.fullscreenElement || document.webkitFullscreenElement || null;
+  }
+
+  function requestFullscreen(silent) {
+    var root = document.documentElement;
+    var req = root.requestFullscreen || root.webkitRequestFullscreen;
+    if (!req) {
+      if (!silent) setHint('Tela cheia não é suportada neste navegador.');
+      return;
+    }
+    try {
+      var result = req.call(root, { navigationUI: 'hide' });
+      if (result && result.then) {
+        result.then(function () {
+          /* Tenta travar em paisagem (só funciona com tela cheia). */
+          if (screen.orientation && screen.orientation.lock) {
+            screen.orientation.lock('landscape').catch(function () { /* ignora */ });
+          }
+        }).catch(function () {
+          if (!silent) setHint('Não foi possível entrar em tela cheia.');
+        });
+      }
+    } catch (err) {
+      if (!silent) setHint('Não foi possível entrar em tela cheia.');
+    }
+  }
+
+  function toggleFullscreen() {
+    bootAudio();
+    game.audio.ui();
+    if (fullscreenElement()) {
+      var exit = document.exitFullscreen || document.webkitExitFullscreen;
+      if (exit) exit.call(document);
+      return;
+    }
+    requestFullscreen(false);
+  }
+
   /* ---------------------------------------------------------- ações */
 
   function primaryAction() {
     bootAudio();
     game.audio.ui();
     if (overlayMode === 'start') {
+      /* No celular entra em tela cheia já no primeiro toque (modo paisagem). */
+      if (isTouch) requestFullscreen(true);
       hideOverlay();
       game.loadLevel(0);
     } else if (overlayMode === 'win') {
@@ -174,7 +226,9 @@
 
   canvas.addEventListener('pointerdown', function (e) {
     e.preventDefault();
-    if (paused) return;
+    if (paused || blocked) return;
+    /* Em telas multitoque, apenas o primeiro dedo controla o estilingue. */
+    if (e.isPrimary === false) return;
     bootAudio();
     if (canvas.setPointerCapture && e.pointerId != null) {
       try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* ignora */ }
@@ -184,19 +238,20 @@
   });
 
   canvas.addEventListener('pointermove', function (e) {
-    if (paused) return;
+    if (paused || blocked || e.isPrimary === false) return;
+    e.preventDefault();
     var p = game.screenToWorld(e.clientX, e.clientY);
     game.pointerMove(p.x, p.y);
   });
 
   canvas.addEventListener('pointerup', function (e) {
     e.preventDefault();
-    if (paused) return;
+    if (paused || blocked || e.isPrimary === false) return;
     game.pointerUp();
   });
 
   canvas.addEventListener('pointercancel', function () {
-    if (!paused) game.pointerUp();
+    if (!paused && !blocked) game.pointerUp();
   });
 
   canvas.addEventListener('contextmenu', function (e) { e.preventDefault(); });
@@ -223,6 +278,11 @@
       return;
     }
 
+    if (key === 'f') {
+      toggleFullscreen();
+      return;
+    }
+
     if (key === 'enter' && paused) {
       e.preventDefault();
       primaryAction();
@@ -243,10 +303,12 @@
   });
 
   el.btnAbility.addEventListener('click', function () {
-    if (paused) return;
+    if (paused || blocked) return;
     bootAudio();
     game.triggerAbility();
   });
+
+  el.btnFull.addEventListener('click', toggleFullscreen);
 
   /* ---------------------------------------------------------- eventos do jogo */
 
@@ -273,7 +335,7 @@
     var dt = lastTs ? ts - lastTs : 16.67;
     lastTs = ts;
 
-    if (!paused) game.update(dt);
+    if (!paused && !blocked) game.update(dt);
     game.render();
 
     el.btnAbility.classList.toggle('off', !game.abilityReady());
@@ -283,10 +345,31 @@
 
   /* ---------------------------------------------------------- resize */
 
-  function onResize() { game.resize(); }
+  var resizeTimer = null;
+
+  /* Redimensiona com um pequeno atraso: em celulares o navegador informa as
+     dimensões antigas logo após girar a tela ou esconder a barra de endereço. */
+  function onResize() {
+    if (resizeTimer) clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function () {
+      resizeTimer = null;
+      game.resize();
+    }, 90);
+  }
 
   window.addEventListener('resize', onResize);
   window.addEventListener('orientationchange', onResize);
+
+  /* No celular a barra de endereço muda a altura visível sem disparar
+     `resize`, por isso observamos também o visualViewport. */
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', onResize);
+  }
+
+  /* O jogo não tem nada para ampliar: bloqueia o zoom por pinça no iOS. */
+  ['gesturestart', 'gesturechange', 'gestureend'].forEach(function (type) {
+    document.addEventListener(type, function (e) { e.preventDefault(); }, { passive: false });
+  });
 
   /* Ao voltar para a aba, zera o relógio para não acumular tempo parado. */
   document.addEventListener('visibilitychange', function () {
@@ -294,14 +377,46 @@
   });
 
   if (window.ResizeObserver && app) {
-    new ResizeObserver(onResize).observe(app);
+    new ResizeObserver(function () { game.resize(); }).observe(app);
   }
+
+  /* ---------------------------------------------------------- orientação */
+
+  /* O canvas é 16:9; na vertical de um celular sobraria uma faixa minúscula.
+     Nesse caso o jogo pausa e aparece o aviso para girar o aparelho.
+     A condição exige toque para não bloquear janelas estreitas no desktop. */
+  var rotateMq = window.matchMedia
+    ? window.matchMedia('(orientation: portrait) and (max-width: 900px)')
+    : null;
+
+  function applyOrientation() {
+    blocked = isTouch && !!(rotateMq && rotateMq.matches);
+    document.documentElement.classList.toggle('portrait-blocked', blocked);
+    if (blocked) {
+      /* Com o aviso na tela o jogo fica parado: a trilha também para. */
+      if (game.audio.musicOn) game.audio.stopMusic();
+    } else {
+      if (musicStarted && !game.audio.musicOn) game.audio.startMusic();
+      game.resize();
+    }
+  }
+
+  if (rotateMq) {
+    if (rotateMq.addEventListener) rotateMq.addEventListener('change', applyOrientation);
+    else if (rotateMq.addListener) rotateMq.addListener(applyOrientation);
+  }
+
+  window.addEventListener('orientationchange', function () {
+    applyOrientation();
+    setTimeout(applyOrientation, 250);
+  });
 
   /* ---------------------------------------------------------- início */
 
   game.loadLevel(0);
   game.resize();
   showOverlay('start');
+  applyOrientation();
   requestAnimationFrame(frame);
 
   /* Exposto para depuração/testes no console do navegador. */

@@ -10,10 +10,23 @@
 
 const http = require('http');
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 
 const ROOT = __dirname;
 const PORT = Number(process.env.PORT) || 5173;
+
+/* Endereços IPv4 da rede local, para abrir o jogo no celular. */
+function lanAddresses() {
+  const list = [];
+  const ifaces = os.networkInterfaces();
+  Object.keys(ifaces).forEach((name) => {
+    (ifaces[name] || []).forEach((info) => {
+      if (info.family === 'IPv4' && !info.internal) list.push(info.address);
+    });
+  });
+  return list;
+}
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -78,9 +91,16 @@ server.on('error', (err) => {
 });
 
 server.listen(PORT, () => {
+  const lans = lanAddresses();
   console.log('');
   console.log('  🐦 Angry Birds — Física & Som');
-  console.log(`  Rodando em  http://localhost:${PORT}`);
+  console.log(`  Neste computador  http://localhost:${PORT}`);
+  if (lans.length) {
+    console.log('  No celular (mesma rede Wi-Fi):');
+    lans.forEach((ip) => console.log(`                    http://${ip}:${PORT}`));
+  } else {
+    console.log('  (Nenhum endereço de rede local encontrado para acessar pelo celular.)');
+  }
   console.log('  Encerrar com Ctrl+C');
   console.log('');
 });

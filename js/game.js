@@ -83,6 +83,12 @@
     this._lastCreakAt = 0;
     this._creakStep = 0;
 
+    /* Em telas de toque o alvo do dedo é maior que o ponteiro do mouse. */
+    this._touch = !!(global.matchMedia && global.matchMedia('(pointer: coarse)').matches) ||
+      ('ontouchstart' in global) ||
+      (global.navigator && global.navigator.maxTouchPoints > 0);
+    this._grabRadius = this._touch ? 160 : 110;
+
     /* callbacks para a interface */
     this.onStateChange = null;
 
@@ -462,7 +468,7 @@
     if (this.state !== 'idle' || !this.readyBird) return;
 
     var pos = this.dragPos || this._restPos();
-    if (Math.hypot(wx - pos.x, wy - pos.y) > 110 && wx > AB.SLING.x + 220) return;
+    if (Math.hypot(wx - pos.x, wy - pos.y) > this._grabRadius && wx > AB.SLING.x + 220) return;
 
     this.dragging = true;
     this.state = 'aiming';

@@ -1,0 +1,18 @@
+- generic [ref=e2]:
+  - generic:
+    - generic:
+      - generic:
+        - generic: PONTOS
+        - generic: "0"
+      - generic:
+        - generic: FASE
+        - generic: "1"
+    - generic:
+      - generic:
+        - generic "Red"
+        - generic "Red"
+        - generic "Chuck"
+      - button "⚡" [ref=e4] [cursor=pointer]
+      - button "↻" [ref=e5] [cursor=pointer]
+      - button "🔊" [ref=e6] [cursor=pointer]
+  - generic: Mire, estique a borracha e solte!
